@@ -1,6 +1,6 @@
-=== Embed Image Links ===
+=== Queue Posts ===
 Contributors: 2biazdk
-Tags: post, page, queue, buffer, schedule
+Tags: post, page, queue, buffer, schedule, auto, automatic, posting, scheduling, posts, pages
 Requires at least: 3.3
 Tested up to: 3.5.1
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHE8UEBKSYJCA

@@ -3,7 +3,7 @@
 Plugin Name: Queue posts
 Plugin URI: http://mediadk.dk/wp-plugins/queue-posts/
 Description: Queue posts and pages for later publishing with the press of a button.
-Version: 1.3
+Version: 1.4
 Author: Mediadk
 Author URI: http://mediadk.dk
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHE8UEBKSYJCA

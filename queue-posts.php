@@ -3,10 +3,10 @@
 Plugin Name: Queue posts - by Wonder
 Plugin URI: http://WeAreWonder.dk/wp-plugins/queue-posts/
 Description: Queue posts and pages for later publishing with the press of a button.
-Version: 1.4
+Version: 1.5.1
 Author: Wonder
 Author URI: http://WeAreWonder.dk
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHE8UEBKSYJCA
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5B6TDUTW2JVX8
 License: GPL2
 	
 	Copyright 2014 Wonder  (email : tobias@WeAreWonder.dk)
@@ -130,7 +130,7 @@ function queue_posts_plugin_action_links($links, $file) {
 add_filter('wp_insert_post_data', 'queue_posts_insert_post_data', '99', 2);
 function queue_posts_insert_post_data($data, $postarr) {
 	
-	if (( @$data['post_status'] == 'draft' || @$data['post_status'] == 'publish' || @$data['post_status'] == 'future' ) && ( @$data['post_type'] == 'post' || @$data['post_type'] == 'page' )) {
+	if (( @$data['post_status'] == 'draft' || @$data['post_status'] == 'publish' || @$data['post_status'] == 'future' )) {
 		
 		$transferred_future_date = @floatval( $postarr['queue-posts-plugin-future-date'] );
 		$future_date             = @floatval( $postarr['queue-posts-plugin-future-date'] );

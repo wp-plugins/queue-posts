@@ -1,15 +1,15 @@
 <?php
 /*
-Plugin Name: Queue posts
-Plugin URI: http://mediadk.dk/wp-plugins/queue-posts/
+Plugin Name: Queue posts - by Wonder
+Plugin URI: http://WeAreWonder.dk/wp-plugins/queue-posts/
 Description: Queue posts and pages for later publishing with the press of a button.
 Version: 1.4
-Author: Mediadk
-Author URI: http://mediadk.dk
+Author: Wonder
+Author URI: http://WeAreWonder.dk
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHE8UEBKSYJCA
 License: GPL2
 	
-	Copyright 2013 Mediadk  (email : tobias@mediadk.dk)
+	Copyright 2014 Wonder  (email : tobias@WeAreWonder.dk)
 	
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as 
@@ -84,19 +84,19 @@ add_action('wp_ajax_get_next_publish_time', 'get_next_publish_time_callback');
 function get_next_publish_time_callback() {
 	
 	$posts = array_merge( get_posts('post_status=future'), get_pages('post_status=future') );
-
+	
 	$latest_date = 0;
-
+	
 	foreach ($posts as $post) {
-
+		
 		$date = strtotime($post->post_date);
-
+		
 		if ( $date > $latest_date ) {
 			$latest_date = $date;
 		}
-
+		
 	}
-
+	
 	if ( $latest_date == 0 ) {
 		$latest_date = mktime();
 	}
@@ -133,14 +133,14 @@ function queue_posts_insert_post_data($data, $postarr) {
 	if (( @$data['post_status'] == 'draft' || @$data['post_status'] == 'publish' || @$data['post_status'] == 'future' ) && ( @$data['post_type'] == 'post' || @$data['post_type'] == 'page' )) {
 		
 		$transferred_future_date = @floatval( $postarr['queue-posts-plugin-future-date'] );
-		$future_date = @floatval( $postarr['queue-posts-plugin-future-date'] );
+		$future_date             = @floatval( $postarr['queue-posts-plugin-future-date'] );
 		
 		if ( intval($future_date) != 0 && is_numeric($future_date) ) {
 			
-			$iQueueTimeFrom        = @intval(getQueueTimeFromSetting());
-			$iQueueTimeTo          = @intval(getQueueTimeToSetting());
-			$iMinimumInterval      = getQueueMinimumInterval();
-			$iMinimumIntervalType  = getQueueMinimumIntervalType();
+			$iQueueTimeFrom       = @intval(getQueueTimeFromSetting());
+			$iQueueTimeTo         = @intval(getQueueTimeToSetting());
+			$iMinimumInterval     = getQueueMinimumInterval();
+			$iMinimumIntervalType = getQueueMinimumIntervalType();
 			
 			if ( $future_date < mktime() ) {
 				/* Make sure the future date is not in the past. */
@@ -149,19 +149,24 @@ function queue_posts_insert_post_data($data, $postarr) {
 			
 			if ( $iMinimumIntervalType == 'h' ) {
 				/* Convert hours to minutes. */
-				$iMinimumInterval = $iMinimumInterval * 60;
+				$iMinimumInterval   = $iMinimumInterval * 60;
+				$iAddRandomInterval = rand(0, (60 * 60)); // Minutes
+			} else {
+				$iAddRandomInterval = rand(0, ($iMinimumInterval * 60) * 0.2) + rand(0, 60); // Minutes + seconds
 			}
 			$iMinimumInterval = intval($iMinimumInterval);
 			
-			$future_date = $future_date + ($iMinimumInterval * 60) + rand(0, (60 * 60));
+			/* Convert interval from seconds to minutes/hours, and add a random number of minutes to avoid posting at exact times. */
+			$future_date = $future_date + ($iMinimumInterval * 60) + $iAddRandomInterval;
 			
+			/* If future date and time is not within the "Publish time" period... */
 			if ( date('G', $future_date) < $iQueueTimeFrom || date('G', $future_date) > $iQueueTimeTo ) {
 				$new_future_date = $transferred_future_date + (60 * 60 * 24);
 				
 				$future_date = mktime($iQueueTimeFrom, rand(0, 59), rand(0, 59), date('n', $new_future_date), date('j', $new_future_date), date('Y', $new_future_date));
 			}
 			
-			$future_date_gmt = $future_date - (60*60);
+			$future_date_gmt = $future_date - (get_option('gmt_offset')*60);
 			
 			$data['post_status']   = 'future';
 			$data['post_date']     = date('Y-m-d H:i:s', $future_date);
@@ -202,7 +207,54 @@ function queue_posts_admin_page() {
 	$iQueueTimeTo         = getQueueTimeToSetting();
 	$iMinimumInterval     = getQueueMinimumInterval();
 	$iMinimumIntervalType = getQueueMinimumIntervalType();
+	
+	/* Is user using 12 hour time format? */
+	$timeformat       = strtolower( get_option('time_format') );
+	$bUsing12HourTime = str_replace('\a', '', $timeformat);
+	$bUsing12HourTime = (strpos($bUsing12HourTime, 'a') !== FALSE);
 	?>
+	
+	<style type="text/css">
+	.donate-box {
+		float: right;
+		width: 200px;
+		padding: 25px;
+		margin:  25px;
+		border: 2px solid #bbb;
+		background-color: #e7e7e7;
+	}
+	
+	.donate-box h2 {
+		margin-top: 0;
+	}
+	
+	.donate-box hr {
+		height: 1px;
+		border-width: 2px 0 0 0;
+		border-style: solid;
+		border-color: #bbb;
+	}
+	</style>
+	
+	<div class="donate-box">
+		<h2>Donations</h2>
+		
+		<p>
+			If you like our plugin, please consider donating a few dollars, so we can continue to provide support and make awesome stuff for you guys!
+		</p>
+		
+		<p>
+			<a title="Donate" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AHE8UEBKSYJCA">Donate &raquo;</a>
+		</p>
+		
+		<hr>
+		
+		<h2>See also...</h2>
+		
+		<p>
+			<a title="Embed Image Links plugin" href="http://wordpress.org/plugins/embed-image-links/">Embed Image Links plugin</a>
+		</p>
+	</div>
 	
 	<div class="wrap">
 		
@@ -221,58 +273,58 @@ function queue_posts_admin_page() {
 				<br><br>
 				
 				<select id="queue-posts-time-from" name="queue-time-from">
-					<option>00</option>
-					<option>01</option>
-					<option>02</option>
-					<option>03</option>
-					<option>04</option>
-					<option>05</option>
-					<option>06</option>
-					<option>07</option>
-					<option>08</option>
-					<option>09</option>
-					<option>10</option>
-					<option>11</option>
-					<option>12</option>
-					<option>13</option>
-					<option>14</option>
-					<option>15</option>
-					<option>16</option>
-					<option>17</option>
-					<option>18</option>
-					<option>19</option>
-					<option>20</option>
-					<option>21</option>
-					<option>22</option>
-					<option>23</option>
+					<option value="00"><?php echo ($bUsing12HourTime ? '12 AM' : '00'); ?></option>
+					<option value="01"><?php echo ($bUsing12HourTime ? ' 1 AM' : '01'); ?></option>
+					<option value="02"><?php echo ($bUsing12HourTime ? ' 2 AM' : '02'); ?></option>
+					<option value="03"><?php echo ($bUsing12HourTime ? ' 3 AM' : '03'); ?></option>
+					<option value="04"><?php echo ($bUsing12HourTime ? ' 4 AM' : '04'); ?></option>
+					<option value="05"><?php echo ($bUsing12HourTime ? ' 5 AM' : '05'); ?></option>
+					<option value="06"><?php echo ($bUsing12HourTime ? ' 6 AM' : '06'); ?></option>
+					<option value="07"><?php echo ($bUsing12HourTime ? ' 7 AM' : '07'); ?></option>
+					<option value="08"><?php echo ($bUsing12HourTime ? ' 8 AM' : '08'); ?></option>
+					<option value="09"><?php echo ($bUsing12HourTime ? ' 9 AM' : '09'); ?></option>
+					<option value="10"><?php echo ($bUsing12HourTime ? '10 AM' : '10'); ?></option>
+					<option value="11"><?php echo ($bUsing12HourTime ? '11 AM' : '11'); ?></option>
+					<option value="12"><?php echo ($bUsing12HourTime ? '12 PM' : '12'); ?></option>
+					<option value="13"><?php echo ($bUsing12HourTime ? ' 1 AM' : '13'); ?></option>
+					<option value="14"><?php echo ($bUsing12HourTime ? ' 2 AM' : '14'); ?></option>
+					<option value="15"><?php echo ($bUsing12HourTime ? ' 3 AM' : '15'); ?></option>
+					<option value="16"><?php echo ($bUsing12HourTime ? ' 4 AM' : '16'); ?></option>
+					<option value="17"><?php echo ($bUsing12HourTime ? ' 5 AM' : '17'); ?></option>
+					<option value="18"><?php echo ($bUsing12HourTime ? ' 6 AM' : '18'); ?></option>
+					<option value="19"><?php echo ($bUsing12HourTime ? ' 7 AM' : '19'); ?></option>
+					<option value="20"><?php echo ($bUsing12HourTime ? ' 8 AM' : '20'); ?></option>
+					<option value="21"><?php echo ($bUsing12HourTime ? ' 9 AM' : '21'); ?></option>
+					<option value="22"><?php echo ($bUsing12HourTime ? '10 AM' : '22'); ?></option>
+					<option value="23"><?php echo ($bUsing12HourTime ? '11 AM' : '23'); ?></option>
 				</select>
-				
+			
 				&mdash;
-				
+			
 				<select id="queue-posts-time-to" name="queue-time-to">
-					<option>01</option>
-					<option>02</option>
-					<option>03</option>
-					<option>04</option>
-					<option>05</option>
-					<option>06</option>
-					<option>07</option>
-					<option>08</option>
-					<option>09</option>
-					<option>10</option>
-					<option>11</option>
-					<option>12</option>
-					<option>13</option>
-					<option>14</option>
-					<option>15</option>
-					<option>16</option>
-					<option>17</option>
-					<option>18</option>
-					<option>19</option>
-					<option>20</option>
-					<option>21</option>
-					<option>22</option>
-					<option>23</option>
+					<option value="01"><?php echo ($bUsing12HourTime ? ' 1 AM' : '01'); ?></option>
+					<option value="02"><?php echo ($bUsing12HourTime ? ' 2 AM' : '02'); ?></option>
+					<option value="03"><?php echo ($bUsing12HourTime ? ' 3 AM' : '03'); ?></option>
+					<option value="04"><?php echo ($bUsing12HourTime ? ' 4 AM' : '04'); ?></option>
+					<option value="05"><?php echo ($bUsing12HourTime ? ' 5 AM' : '05'); ?></option>
+					<option value="06"><?php echo ($bUsing12HourTime ? ' 6 AM' : '06'); ?></option>
+					<option value="07"><?php echo ($bUsing12HourTime ? ' 7 AM' : '07'); ?></option>
+					<option value="08"><?php echo ($bUsing12HourTime ? ' 8 AM' : '08'); ?></option>
+					<option value="09"><?php echo ($bUsing12HourTime ? ' 9 AM' : '09'); ?></option>
+					<option value="10"><?php echo ($bUsing12HourTime ? '10 AM' : '10'); ?></option>
+					<option value="11"><?php echo ($bUsing12HourTime ? '11 AM' : '11'); ?></option>
+					<option value="12"><?php echo ($bUsing12HourTime ? '12 PM' : '12'); ?></option>
+					<option value="13"><?php echo ($bUsing12HourTime ? ' 1 AM' : '13'); ?></option>
+					<option value="14"><?php echo ($bUsing12HourTime ? ' 2 AM' : '14'); ?></option>
+					<option value="15"><?php echo ($bUsing12HourTime ? ' 3 AM' : '15'); ?></option>
+					<option value="16"><?php echo ($bUsing12HourTime ? ' 4 AM' : '16'); ?></option>
+					<option value="17"><?php echo ($bUsing12HourTime ? ' 5 AM' : '17'); ?></option>
+					<option value="18"><?php echo ($bUsing12HourTime ? ' 6 AM' : '18'); ?></option>
+					<option value="19"><?php echo ($bUsing12HourTime ? ' 7 AM' : '19'); ?></option>
+					<option value="20"><?php echo ($bUsing12HourTime ? ' 8 AM' : '20'); ?></option>
+					<option value="21"><?php echo ($bUsing12HourTime ? ' 9 AM' : '21'); ?></option>
+					<option value="22"><?php echo ($bUsing12HourTime ? '10 AM' : '22'); ?></option>
+					<option value="23"><?php echo ($bUsing12HourTime ? '11 AM' : '23'); ?></option>
 				</select>
 			</p>
 			
@@ -283,7 +335,7 @@ function queue_posts_admin_page() {
 				
 				<br><br>
 				
-				<input id="queue-posts-minimum-interval" name="minimum-interval" type="text" maxlength="4" value="<?php echo $iMinimumInterval; ?>" style="width: 40px;">
+				<input id="queue-posts-minimum-interval" name="minimum-interval" type="text" maxlength="4" value="<?php echo $iMinimumInterval; ?>" style="width: 50px; text-align: center;">
 				<select id="queue-posts-minimum-interval-type" name="minimum-interval-type">
 					<option value="h"><?php echo _('hour(s)'); ?></option>
 					<option value="m"><?php echo _('minute(s)'); ?></option>

@@ -2,7 +2,7 @@
 Contributors: 2biazdk
 Tags: post, page, queue, buffer, schedule, auto, automatic, automatically, posting, scheduling, posts, pages, buffering, plan, calendar, later, interval, wonder, convert, converting, custom posts, custom post types, custom content types, custom content, custom
 Requires at least: 3.0
-Tested up to: 3.8.1
+Tested up to: 4.0
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5B6TDUTW2JVX8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html

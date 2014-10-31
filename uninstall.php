@@ -9,5 +9,6 @@ delete_option('queue_posts_time_from');
 delete_option('queue_posts_time_to');
 delete_option('queue_posts_minimum_interval');
 delete_option('queue_posts_minimum_interval_type');
+delete_option('queue_posts_last_queued');
 
 ?>

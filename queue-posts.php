@@ -3,7 +3,7 @@
 Plugin Name: Queue posts - by Wonder
 Plugin URI: http://WeAreWonder.dk/wp-plugins/queue-posts/
 Description: Queue posts and pages for later publishing with the press of a button.
-Version: 1.5.1
+Version: 1.6.0
 Author: Wonder
 Author URI: http://WeAreWonder.dk
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5B6TDUTW2JVX8
@@ -50,6 +50,12 @@ function queue_posts_head() {
 	echo '<link rel="stylesheet" type="text/css" href="' . plugin_dir_url( __FILE__ ) . 'style.css">';
 }
 
+// Create or destroy settings in database on activation / deactivation
+register_activation_hook(__FILE__, 'queue_posts_activate');
+register_deactivation_hook(__FILE__, 'queue_posts_deactivate');
+function queue_posts_activate() { update_option('queue_posts_last_queued', false); }
+function queue_posts_deactivate() { delete_option('queue_posts_last_queued'); }
+
 add_action('admin_footer', 'queue_posts_footer');
 function queue_posts_footer() { ?>
 <script type="text/javascript">
@@ -57,7 +63,14 @@ jQuery(document).ready(function($) {
 	
 	var oSubmitQueue = jQuery('<input type="button" name="publish-queue" id="publish-queue" class="button button-primary button-large button-queue" value="Queue"><input type="hidden" name="queue-posts-plugin-future-date">');
 	
+	// Display add to queue button on new posts
 	jQuery('body.post-new-php #publishing-action').append( oSubmitQueue );
+	
+	// If in edit screen and post is unpublished then give add to queue button
+	var state = jQuery('body.post-php #publishing-action #publish').val();
+	if (state != 'Update'){
+		jQuery('body.post-php #publishing-action').append( oSubmitQueue );
+	}
 	
 	jQuery('#publish-queue').click(function() {
 		
@@ -83,22 +96,52 @@ jQuery(document).ready(function($) {
 add_action('wp_ajax_get_next_publish_time', 'get_next_publish_time_callback');
 function get_next_publish_time_callback() {
 	
-	$posts = array_merge( get_posts('post_status=future'), get_pages('post_status=future') );
+	$last_queued = getQueueLastQueued();
 	
-	$latest_date = 0;
-	
-	foreach ($posts as $post) {
+	// If we are using database value to queue posts
+	if ($last_queued) {
 		
-		$date = strtotime($post->post_date);
-		
-		if ( $date > $latest_date ) {
-			$latest_date = $date;
+		// if now >= last queued
+		if (mktime() >= $last_queued){
+			$latest_date = mktime();
+		} else {
+			$latest_date = $last_queued;
 		}
 		
-	}
-	
-	if ( $latest_date == 0 ) {
-		$latest_date = mktime();
+		// save last queued + interval to database
+		$iMinimumInterval     = getQueueMinimumInterval();
+		$iMinimumIntervalType = getQueueMinimumIntervalType();
+		
+		if ($iMinimumIntervalType == 'm') {
+			$update = $iMinimumInterval*60;
+		} else {
+			$update = $iMinimumInterval*60*60;
+		}
+		
+		$last_queued = $latest_date + $update;
+		
+		update_option('queue_posts_last_queued', $last_queued);
+		
+	// If we are queuing posts after the last scheduled post…
+	} else {
+		
+		$posts = array_merge( get_posts('post_status=future'), get_pages('post_status=future') );
+		
+		$latest_date = 0;
+		
+		foreach ($posts as $post) {
+			
+			$date = strtotime($post->post_date);
+			
+			if ( $date > $latest_date ) {
+				$latest_date = $date;
+			}
+		}
+		
+		if ( $latest_date == 0 ) {
+			$latest_date = mktime();
+		}
+		
 	}
 	
 	echo $latest_date;
@@ -183,6 +226,7 @@ function queue_posts_insert_post_data($data, $postarr) {
 function queue_posts_admin_page() {
 	
 	if ( isset($_POST['queue-time-from']) ) {
+		$iLastQueued	      = $_POST['queue-posts-last-queued'];
 		$iQueueTimeFrom       = $_POST['queue-time-from'];
 		$iQueueTimeTo         = $_POST['queue-time-to'];
 		$iMinimumInterval     = $_POST['minimum-interval'];
@@ -193,16 +237,22 @@ function queue_posts_admin_page() {
 			$iMinimumInterval = 0;
 		}
 		
-		update_option('queue_posts_time_from', $iQueueTimeFrom);
-		update_option('queue_posts_time_to', $iQueueTimeTo);
-		update_option('queue_posts_minimum_interval', $iMinimumInterval);
+		if ($iLastQueued == 'false') {
+			$iLastQueued = false;
+		}
+		
+		update_option('queue_posts_time_from',             $iQueueTimeFrom);
+		update_option('queue_posts_time_to',               $iQueueTimeTo);
+		update_option('queue_posts_minimum_interval',      $iMinimumInterval);
 		update_option('queue_posts_minimum_interval_type', $iMinimumIntervalType);
+		update_option('queue_posts_last_queued',           $iLastQueued);
 		
 		wp_redirect('?page=' . $_GET['page'] . '&msg=saved');
 		
 		exit();
 	}
 	
+	$iLastQueued	      = getQueueLastQueued();
 	$iQueueTimeFrom       = getQueueTimeFromSetting();
 	$iQueueTimeTo         = getQueueTimeToSetting();
 	$iMinimumInterval     = getQueueMinimumInterval();
@@ -339,6 +389,19 @@ function queue_posts_admin_page() {
 				<select id="queue-posts-minimum-interval-type" name="minimum-interval-type">
 					<option value="h"><?php echo _('hour(s)'); ?></option>
 					<option value="m"><?php echo _('minute(s)'); ?></option>
+				</select>
+			</p>
+			
+			<p style="margin: 15px 0;">
+				<label for="queue-posts-method">
+					<?php echo _('Queueing method'); ?>:
+				</label>
+				
+				<br><br>
+				
+				<select id="queue-posts-last-queued" name="queue-posts-last-queued">
+					<option value="<?php if ( $iLastQueued ) { echo $iLastQueued; } else { echo mktime(); } ?>"<?php if ( $iLastQueued ) { echo ' selected=selected'; } ?>>Insert next post after previously queued item</option>
+					<option value="false"<?php if ( !$iLastQueued ) { echo ' selected=selected'; } ?>><?php echo _('Insert next post after the last scheduled post'); ?></option>
 				</select>
 			</p>
 			

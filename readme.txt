@@ -1,5 +1,5 @@
 === Queue Posts ===
-Contributors: 2biazdk
+Contributors: 2biazdk, James Doc
 Tags: post, page, queue, buffer, schedule, auto, automatic, automatically, posting, scheduling, posts, pages, buffering, plan, calendar, later, interval, wonder, convert, converting, custom posts, custom post types, custom content types, custom content, custom
 Requires at least: 3.0
 Tested up to: 4.0

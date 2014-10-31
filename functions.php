@@ -32,4 +32,8 @@ function getQueueMinimumIntervalType() {
 	return $iMinimumIntervalType;
 }
 
+function getQueueLastQueued() {
+	return get_option('queue_posts_last_queued', false);
+}
+
 ?>

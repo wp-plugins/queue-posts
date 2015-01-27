@@ -3,7 +3,7 @@
 Plugin Name: Queue posts - by Wonder
 Plugin URI: http://WeAreWonder.dk/wp-plugins/queue-posts/
 Description: Queue posts and pages for later publishing with the press of a button.
-Version: 1.6.0
+Version: 1.6.1
 Author: Wonder
 Author URI: http://WeAreWonder.dk
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5B6TDUTW2JVX8
@@ -336,17 +336,17 @@ function queue_posts_admin_page() {
 					<option value="10"><?php echo ($bUsing12HourTime ? '10 AM' : '10'); ?></option>
 					<option value="11"><?php echo ($bUsing12HourTime ? '11 AM' : '11'); ?></option>
 					<option value="12"><?php echo ($bUsing12HourTime ? '12 PM' : '12'); ?></option>
-					<option value="13"><?php echo ($bUsing12HourTime ? ' 1 AM' : '13'); ?></option>
-					<option value="14"><?php echo ($bUsing12HourTime ? ' 2 AM' : '14'); ?></option>
-					<option value="15"><?php echo ($bUsing12HourTime ? ' 3 AM' : '15'); ?></option>
-					<option value="16"><?php echo ($bUsing12HourTime ? ' 4 AM' : '16'); ?></option>
-					<option value="17"><?php echo ($bUsing12HourTime ? ' 5 AM' : '17'); ?></option>
-					<option value="18"><?php echo ($bUsing12HourTime ? ' 6 AM' : '18'); ?></option>
-					<option value="19"><?php echo ($bUsing12HourTime ? ' 7 AM' : '19'); ?></option>
-					<option value="20"><?php echo ($bUsing12HourTime ? ' 8 AM' : '20'); ?></option>
-					<option value="21"><?php echo ($bUsing12HourTime ? ' 9 AM' : '21'); ?></option>
-					<option value="22"><?php echo ($bUsing12HourTime ? '10 AM' : '22'); ?></option>
-					<option value="23"><?php echo ($bUsing12HourTime ? '11 AM' : '23'); ?></option>
+					<option value="13"><?php echo ($bUsing12HourTime ? ' 1 PM' : '13'); ?></option>
+					<option value="14"><?php echo ($bUsing12HourTime ? ' 2 PM' : '14'); ?></option>
+					<option value="15"><?php echo ($bUsing12HourTime ? ' 3 PM' : '15'); ?></option>
+					<option value="16"><?php echo ($bUsing12HourTime ? ' 4 PM' : '16'); ?></option>
+					<option value="17"><?php echo ($bUsing12HourTime ? ' 5 PM' : '17'); ?></option>
+					<option value="18"><?php echo ($bUsing12HourTime ? ' 6 PM' : '18'); ?></option>
+					<option value="19"><?php echo ($bUsing12HourTime ? ' 7 PM' : '19'); ?></option>
+					<option value="20"><?php echo ($bUsing12HourTime ? ' 8 PM' : '20'); ?></option>
+					<option value="21"><?php echo ($bUsing12HourTime ? ' 9 PM' : '21'); ?></option>
+					<option value="22"><?php echo ($bUsing12HourTime ? '10 PM' : '22'); ?></option>
+					<option value="23"><?php echo ($bUsing12HourTime ? '11 PM' : '23'); ?></option>
 				</select>
 			
 				&mdash;
@@ -364,17 +364,17 @@ function queue_posts_admin_page() {
 					<option value="10"><?php echo ($bUsing12HourTime ? '10 AM' : '10'); ?></option>
 					<option value="11"><?php echo ($bUsing12HourTime ? '11 AM' : '11'); ?></option>
 					<option value="12"><?php echo ($bUsing12HourTime ? '12 PM' : '12'); ?></option>
-					<option value="13"><?php echo ($bUsing12HourTime ? ' 1 AM' : '13'); ?></option>
-					<option value="14"><?php echo ($bUsing12HourTime ? ' 2 AM' : '14'); ?></option>
-					<option value="15"><?php echo ($bUsing12HourTime ? ' 3 AM' : '15'); ?></option>
-					<option value="16"><?php echo ($bUsing12HourTime ? ' 4 AM' : '16'); ?></option>
-					<option value="17"><?php echo ($bUsing12HourTime ? ' 5 AM' : '17'); ?></option>
-					<option value="18"><?php echo ($bUsing12HourTime ? ' 6 AM' : '18'); ?></option>
-					<option value="19"><?php echo ($bUsing12HourTime ? ' 7 AM' : '19'); ?></option>
-					<option value="20"><?php echo ($bUsing12HourTime ? ' 8 AM' : '20'); ?></option>
-					<option value="21"><?php echo ($bUsing12HourTime ? ' 9 AM' : '21'); ?></option>
-					<option value="22"><?php echo ($bUsing12HourTime ? '10 AM' : '22'); ?></option>
-					<option value="23"><?php echo ($bUsing12HourTime ? '11 AM' : '23'); ?></option>
+					<option value="13"><?php echo ($bUsing12HourTime ? ' 1 PM' : '13'); ?></option>
+					<option value="14"><?php echo ($bUsing12HourTime ? ' 2 PM' : '14'); ?></option>
+					<option value="15"><?php echo ($bUsing12HourTime ? ' 3 PM' : '15'); ?></option>
+					<option value="16"><?php echo ($bUsing12HourTime ? ' 4 PM' : '16'); ?></option>
+					<option value="17"><?php echo ($bUsing12HourTime ? ' 5 PM' : '17'); ?></option>
+					<option value="18"><?php echo ($bUsing12HourTime ? ' 6 PM' : '18'); ?></option>
+					<option value="19"><?php echo ($bUsing12HourTime ? ' 7 PM' : '19'); ?></option>
+					<option value="20"><?php echo ($bUsing12HourTime ? ' 8 PM' : '20'); ?></option>
+					<option value="21"><?php echo ($bUsing12HourTime ? ' 9 PM' : '21'); ?></option>
+					<option value="22"><?php echo ($bUsing12HourTime ? '10 PM' : '22'); ?></option>
+					<option value="23"><?php echo ($bUsing12HourTime ? '11 PM' : '23'); ?></option>
 				</select>
 			</p>
 			
